@@ -504,28 +504,28 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[Cliente: "Olvidé mi contraseña"] --> B[Ingresa email]
+    A[Cliente olvida contraseña] --> B[Ingresa email]
     B --> C[POST /api/auth/forgot-password]
     
-    C --> D{¿Email<br/>existe?}
+    C --> D{Email existe?}
     
     D -->|No| E[Responder OK de todos modos<br/>seguridad: no revelar si email existe]
     D -->|Sí| F[Generar token único<br/>UUID + timestamp]
     
     F --> G[UPDATE usuarios<br/>SET reset_token, reset_expiry]
     
-    G --> H[Crear link:<br/>https://sistema.com/reset?token=XXX]
+    G --> H[Crear link con token]
     
     H --> I[Enviar email con link]
-    I --> J[Mostrar mensaje:<br/>Revisa tu email]
+    I --> J[Mostrar mensaje<br/>Revisa tu email]
     
     E --> J
     
     J --> K[Cliente abre email]
     K --> L[Click en link]
     
-    L --> M[GET /reset-password?token=XXX]
-    M --> N{¿Token<br/>válido?}
+    L --> M[GET /reset-password con token]
+    M --> N{Token válido?}
     
     N -->|Expirado| O[Error: Link expirado]
     N -->|Inválido| O
@@ -542,7 +542,7 @@ flowchart TD
     V --> W[Enviar email confirmación]
     W --> X[Redirigir a login]
     
-    O --> End
+    O --> End[Fin]
     X --> End
 ```
 
@@ -587,3 +587,59 @@ gantt
 
 **Documento actualizado:** Noviembre 2025  
 **Versión:** 1.0
+
+---
+
+## 📊 Flujo 13: Generación y Notificación de Reportes
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario Generador
+    participant UI as Frontend
+    participant API as Backend
+    participant BD as PostgreSQL
+    participant Job as Background Job
+    participant Email as Servicio Email
+    participant Dest as Destinatario(s)
+    
+    U->>UI: Click Generar Reporte
+    UI->>U: Formulario: tipo, formato, filtros, destinatarios
+    
+    U->>UI: Completa y confirma
+    UI->>API: POST /api/reportes/generar
+    
+    API->>BD: INSERT reportes_generados estado=GENERANDO
+    BD-->>API: ID reporte: 123
+    
+    API->>Job: Encolar generación
+    API-->>UI: 202 Accepted + reporteId
+    
+    UI->>U: Mensaje: Generando reporte...<br/>Te notificaremos cuando esté listo
+    
+    Note over Job: Background Job procesa
+    
+    Job->>BD: Query con filtros
+    BD-->>Job: Datos
+    
+    Job->>Job: Generar PDF o Excel
+    Job->>Job: Guardar archivo
+    
+    Job->>BD: UPDATE estado=COMPLETADO
+    
+    Note over BD: TRIGGER automático se dispara
+    
+    BD->>BD: Crear notificación para generador
+    BD->>BD: Crear notificaciones para destinatarios
+    
+    BD->>Email: Email a generador:<br/>Tu reporte está listo
+    Email-->>U: Email con link descarga
+    
+    alt Hay destinatarios
+        BD->>Email: Email a destinatarios:<br/>Te compartieron un reporte
+        Email-->>Dest: Email con link descarga
+    end
+    
+    U->>UI: Ve notificación en sistema
+    U->>UI: Click descargar
+    UI->>API: GET /api/reportes/download/123
+    API-->>U: Stream archivo

@@ -31,6 +31,9 @@ erDiagram
     
     NOTIFICACIONES }o--|| USUARIOS : "destinatario"
     NOTIFICACIONES }o--|| RECLAMOS : "referencia"
+    
+    REPORTES_GENERADOS }o--|| USUARIOS : "creado_por"
+    REPORTES_GENERADOS }o--|| USUARIOS : "destinatario"
 ```
 
 ---
@@ -70,14 +73,6 @@ CREATE INDEX idx_usuarios_documento ON usuarios(numero_documento);
 CREATE INDEX idx_usuarios_rol ON usuarios(rol_id);
 ```
 
-**Campos Clave:**
-- `id`: Identificador único
-- `email`: Email único para login
-- `password_hash`: Contraseña hasheada (bcrypt)
-- `rol_id`: Relación con tabla de roles
-- `es_cliente`: Indica si tiene cuenta de cliente
-- `numero_suministro`: Solo si es cliente activo
-
 ---
 
 ### 2. ROLES (roles)
@@ -87,13 +82,12 @@ Define los roles del sistema
 ```sql
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(50) UNIQUE NOT NULL, -- 'CLIENTE', 'AGENTE', 'SUPERVISOR', 'ADMIN', 'EJECUTIVO'
+    nombre VARCHAR(50) UNIQUE NOT NULL,
     descripcion TEXT,
-    permisos JSONB, -- Permisos en formato JSON
+    permisos JSONB,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insertar roles por defecto
 INSERT INTO roles (nombre, descripcion) VALUES
 ('PUBLICO', 'Usuario sin registro, solo puede crear reclamos'),
 ('CLIENTE', 'Cliente registrado con acceso a portal personal'),
@@ -107,15 +101,16 @@ INSERT INTO roles (nombre, descripcion) VALUES
 
 ### 3. RECLAMOS (reclamos)
 
-Tabla principal del sistema
+Tabla principal del sistema con **código único por canal**
 
 ```sql
 CREATE TABLE reclamos (
     id SERIAL PRIMARY KEY,
-    codigo VARCHAR(20) UNIQUE NOT NULL, -- REC-2025-0001
+    codigo VARCHAR(20) UNIQUE NOT NULL, -- Formato: {CANAL}-{AÑO}-{NUM}
+    canal VARCHAR(20) NOT NULL, -- 'WEB', 'QR', 'EMAIL', 'FISICO'
     fecha_reclamo TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    -- Datos del reclamante (pueden ser anónimos o de usuario registrado)
+    -- Datos del reclamante
     usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
@@ -149,14 +144,11 @@ CREATE TABLE reclamos (
     
     -- Gestión interna
     estado_id INTEGER REFERENCES estados_reclamo(id) DEFAULT 1,
-    prioridad VARCHAR(10) DEFAULT 'MEDIA', -- 'BAJA', 'MEDIA', 'ALTA', 'URGENTE'
+    prioridad VARCHAR(10) DEFAULT 'MEDIA',
     agente_asignado_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
     fecha_asignacion TIMESTAMP,
     fecha_resolucion TIMESTAMP,
     fecha_cierre TIMESTAMP,
-    
-    -- Canal de ingreso
-    canal VARCHAR(20) NOT NULL, -- 'WEB', 'QR', 'EMAIL', 'FISICO'
     
     -- Tiempos SLA
     fecha_limite_respuesta TIMESTAMP,
@@ -172,30 +164,17 @@ CREATE TABLE reclamos (
 );
 
 CREATE INDEX idx_reclamos_codigo ON reclamos(codigo);
+CREATE INDEX idx_reclamos_canal ON reclamos(canal);
 CREATE INDEX idx_reclamos_email ON reclamos(email);
 CREATE INDEX idx_reclamos_estado ON reclamos(estado_id);
 CREATE INDEX idx_reclamos_agente ON reclamos(agente_asignado_id);
 CREATE INDEX idx_reclamos_fecha ON reclamos(fecha_reclamo DESC);
 CREATE INDEX idx_reclamos_usuario ON reclamos(usuario_id);
-
--- Trigger para actualizar fecha_actualizacion
-CREATE OR REPLACE FUNCTION actualizar_fecha_modificacion()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.fecha_actualizacion = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trigger_actualizar_reclamo
-BEFORE UPDATE ON reclamos
-FOR EACH ROW
-EXECUTE FUNCTION actualizar_fecha_modificacion();
 ```
 
-**Función para generar código único:**
+**Función para generar código único por canal:**
 ```sql
-CREATE OR REPLACE FUNCTION generar_codigo_reclamo()
+CREATE OR REPLACE FUNCTION generar_codigo_reclamo(p_canal VARCHAR)
 RETURNS VARCHAR AS $$
 DECLARE
     nuevo_codigo VARCHAR(20);
@@ -204,12 +183,15 @@ DECLARE
 BEGIN
     anio := EXTRACT(YEAR FROM CURRENT_TIMESTAMP);
     
-    SELECT COALESCE(MAX(CAST(SUBSTRING(codigo FROM 10) AS INTEGER)), 0) + 1
+    -- Obtener el último número para este canal y año
+    SELECT COALESCE(MAX(CAST(SUBSTRING(codigo FROM POSITION('-' IN SUBSTRING(codigo FROM 10)) + 10) AS INTEGER)), 0) + 1
     INTO numero
     FROM reclamos
-    WHERE codigo LIKE 'REC-' || anio || '-%';
+    WHERE codigo LIKE p_canal || '-' || anio || '-%';
     
-    nuevo_codigo := 'REC-' || anio || '-' || LPAD(numero::TEXT, 4, '0');
+    -- Formato: {CANAL}-{AÑO}-{NÚMERO}
+    -- Ejemplos: WEB-2025-0001, QR-2025-0001, EMAIL-2025-0001
+    nuevo_codigo := p_canal || '-' || anio || '-' || LPAD(numero::TEXT, 4, '0');
     
     RETURN nuevo_codigo;
 END;
@@ -227,8 +209,8 @@ CREATE TABLE estados_reclamo (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL,
     descripcion TEXT,
-    color VARCHAR(7), -- Código hexadecimal para UI
-    orden INTEGER, -- Para ordenar en el flujo
+    color VARCHAR(7),
+    orden INTEGER,
     es_estado_final BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -248,7 +230,7 @@ INSERT INTO estados_reclamo (nombre, descripcion, color, orden, es_estado_final)
 
 ### 5. MOTIVOS_RECLAMO (motivos_reclamo)
 
-Catálogo de motivos de reclamo (del formulario)
+Catálogo de motivos de reclamo
 
 ```sql
 CREATE TABLE motivos_reclamo (
@@ -285,7 +267,7 @@ INSERT INTO motivos_reclamo (codigo, nombre, orden) VALUES
 
 ### 6. COMENTARIOS (comentarios)
 
-Comunicaciones internas sobre un reclamo
+Comunicaciones sobre un reclamo
 
 ```sql
 CREATE TABLE comentarios (
@@ -293,8 +275,8 @@ CREATE TABLE comentarios (
     reclamo_id INTEGER REFERENCES reclamos(id) ON DELETE CASCADE,
     usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
     contenido TEXT NOT NULL,
-    es_interno BOOLEAN DEFAULT FALSE, -- Si es TRUE, solo lo ve el equipo interno
-    es_respuesta_oficial BOOLEAN DEFAULT FALSE, -- Si es TRUE, se notifica al cliente
+    es_interno BOOLEAN DEFAULT FALSE,
+    es_respuesta_oficial BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -307,7 +289,7 @@ CREATE INDEX idx_comentarios_fecha ON comentarios(fecha_creacion DESC);
 
 ### 7. ARCHIVOS (archivos)
 
-Archivos adjuntos a reclamos
+Archivos adjuntos
 
 ```sql
 CREATE TABLE archivos (
@@ -332,7 +314,7 @@ CREATE INDEX idx_archivos_reclamo ON archivos(reclamo_id);
 
 ### 8. HISTORIAL_ESTADOS (historial_estados)
 
-Registro de todos los cambios de estado de un reclamo
+Registro de cambios de estado
 
 ```sql
 CREATE TABLE historial_estados (
@@ -353,7 +335,7 @@ CREATE INDEX idx_historial_fecha ON historial_estados(fecha_cambio DESC);
 
 ### 9. ENCUESTAS (encuestas)
 
-Plantillas de encuestas de satisfacción
+Plantillas de encuestas
 
 ```sql
 CREATE TABLE encuestas (
@@ -372,15 +354,15 @@ CREATE TABLE encuestas (
 
 ### 10. PREGUNTAS (preguntas)
 
-Preguntas de las encuestas
+Preguntas de encuestas
 
 ```sql
 CREATE TABLE preguntas (
     id SERIAL PRIMARY KEY,
     encuesta_id INTEGER REFERENCES encuestas(id) ON DELETE CASCADE,
     texto_pregunta TEXT NOT NULL,
-    tipo VARCHAR(20) NOT NULL, -- 'TEXTO', 'OPCION_MULTIPLE', 'ESCALA', 'SI_NO'
-    opciones JSONB, -- Para preguntas de opción múltiple
+    tipo VARCHAR(20) NOT NULL,
+    opciones JSONB,
     obligatoria BOOLEAN DEFAULT FALSE,
     orden INTEGER,
     
@@ -394,7 +376,7 @@ CREATE INDEX idx_preguntas_encuesta ON preguntas(encuesta_id);
 
 ### 11. ENCUESTAS_RESPUESTAS (encuestas_respuestas)
 
-Respuestas de clientes a encuestas
+Respuestas de encuestas
 
 ```sql
 CREATE TABLE encuestas_respuestas (
@@ -402,8 +384,8 @@ CREATE TABLE encuestas_respuestas (
     encuesta_id INTEGER REFERENCES encuestas(id) ON DELETE CASCADE,
     reclamo_id INTEGER REFERENCES reclamos(id) ON DELETE CASCADE,
     usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
-    respuestas JSONB NOT NULL, -- JSON con todas las respuestas
-    calificacion_general INTEGER, -- 1-5 estrellas
+    respuestas JSONB NOT NULL,
+    calificacion_general INTEGER,
     fecha_respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     CONSTRAINT calificacion_valida CHECK (calificacion_general >= 1 AND calificacion_general <= 5),
@@ -418,14 +400,14 @@ CREATE INDEX idx_respuestas_reclamo ON encuestas_respuestas(reclamo_id);
 
 ### 12. NOTIFICACIONES (notificaciones)
 
-Registro de notificaciones enviadas
+Registro de todas las notificaciones del sistema
 
 ```sql
 CREATE TABLE notificaciones (
     id SERIAL PRIMARY KEY,
     usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
     reclamo_id INTEGER REFERENCES reclamos(id) ON DELETE CASCADE,
-    tipo VARCHAR(50) NOT NULL, -- 'EMAIL', 'SMS', 'PUSH', 'SISTEMA'
+    tipo VARCHAR(50) NOT NULL,
     asunto VARCHAR(255),
     contenido TEXT NOT NULL,
     email_destinatario VARCHAR(255),
@@ -436,26 +418,128 @@ CREATE TABLE notificaciones (
     error TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT tipo_notificacion_valida CHECK (tipo IN ('EMAIL', 'SMS', 'PUSH', 'SISTEMA'))
+    -- Para notificaciones de reportes
+    reporte_id INTEGER REFERENCES reportes_generados(id) ON DELETE CASCADE,
+    
+    CONSTRAINT tipo_notificacion_valida CHECK (tipo IN ('EMAIL', 'SMS', 'PUSH', 'SISTEMA', 'REPORTE'))
 );
 
 CREATE INDEX idx_notificaciones_usuario ON notificaciones(usuario_id);
 CREATE INDEX idx_notificaciones_enviada ON notificaciones(enviada);
 CREATE INDEX idx_notificaciones_fecha ON notificaciones(fecha_creacion DESC);
+CREATE INDEX idx_notificaciones_tipo ON notificaciones(tipo);
 ```
 
 ---
 
-### 13. CONFIGURACIONES (configuraciones)
+### 13. REPORTES_GENERADOS (reportes_generados)
 
-Configuraciones del sistema
+Historial de reportes generados con notificaciones
+
+```sql
+CREATE TABLE reportes_generados (
+    id SERIAL PRIMARY KEY,
+    tipo_reporte VARCHAR(50) NOT NULL, -- 'INDECOPI', 'GENERAL', 'EJECUTIVO', 'PERSONALIZADO'
+    formato VARCHAR(10) NOT NULL, -- 'PDF', 'EXCEL', 'CSV'
+    nombre_archivo VARCHAR(255) NOT NULL,
+    ruta_archivo VARCHAR(500) NOT NULL,
+    url_descarga VARCHAR(500),
+    
+    -- Filtros aplicados (en JSON para flexibilidad)
+    filtros_aplicados JSONB,
+    
+    -- Usuario que lo generó
+    generado_por_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+    
+    -- Usuario(s) destinatario(s)
+    destinatarios_ids INTEGER[], -- Array de IDs de usuarios
+    
+    -- Estado del reporte
+    estado VARCHAR(20) DEFAULT 'GENERANDO', -- 'GENERANDO', 'COMPLETADO', 'ERROR'
+    error_mensaje TEXT,
+    
+    -- Metadatos
+    tamano_bytes BIGINT,
+    total_registros INTEGER,
+    
+    -- Fechas
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_completado TIMESTAMP,
+    fecha_expiracion TIMESTAMP, -- Los reportes se eliminan después de X días
+    
+    CONSTRAINT estado_valido CHECK (estado IN ('GENERANDO', 'COMPLETADO', 'ERROR')),
+    CONSTRAINT formato_valido CHECK (formato IN ('PDF', 'EXCEL', 'CSV'))
+);
+
+CREATE INDEX idx_reportes_generado_por ON reportes_generados(generado_por_id);
+CREATE INDEX idx_reportes_estado ON reportes_generados(estado);
+CREATE INDEX idx_reportes_fecha ON reportes_generados(fecha_creacion DESC);
+CREATE INDEX idx_reportes_tipo ON reportes_generados(tipo_reporte);
+
+-- Trigger para notificar cuando se completa un reporte
+CREATE OR REPLACE FUNCTION notificar_reporte_completado()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.estado = 'COMPLETADO' AND OLD.estado != 'COMPLETADO' THEN
+        -- Notificar al que lo generó
+        INSERT INTO notificaciones (
+            usuario_id, 
+            tipo, 
+            asunto, 
+            contenido, 
+            reporte_id,
+            email_destinatario
+        )
+        SELECT 
+            NEW.generado_por_id,
+            'REPORTE',
+            'Tu reporte está listo',
+            'El reporte "' || NEW.nombre_archivo || '" se ha generado exitosamente y está disponible para descargar.',
+            NEW.id,
+            (SELECT email FROM usuarios WHERE id = NEW.generado_por_id);
+        
+        -- Notificar a los destinatarios (si hay)
+        IF NEW.destinatarios_ids IS NOT NULL THEN
+            INSERT INTO notificaciones (
+                usuario_id, 
+                tipo, 
+                asunto, 
+                contenido, 
+                reporte_id,
+                email_destinatario
+            )
+            SELECT 
+                unnest(NEW.destinatarios_ids),
+                'REPORTE',
+                'Te han compartido un reporte',
+                'Se ha generado el reporte "' || NEW.nombre_archivo || '" que fue compartido contigo.',
+                NEW.id,
+                email
+            FROM usuarios 
+            WHERE id = ANY(NEW.destinatarios_ids);
+        END IF;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_notificar_reporte
+AFTER UPDATE ON reportes_generados
+FOR EACH ROW
+EXECUTE FUNCTION notificar_reporte_completado();
+```
+
+---
+
+### 14. CONFIGURACIONES (configuraciones)
 
 ```sql
 CREATE TABLE configuraciones (
     id SERIAL PRIMARY KEY,
     clave VARCHAR(100) UNIQUE NOT NULL,
     valor TEXT,
-    tipo VARCHAR(20), -- 'STRING', 'NUMBER', 'BOOLEAN', 'JSON'
+    tipo VARCHAR(20),
     descripcion TEXT,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -467,21 +551,20 @@ INSERT INTO configuraciones (clave, valor, tipo, descripcion) VALUES
 ('email_remitente', 'reclamos@romeroempresas.com', 'STRING', 'Email desde donde se envían notificaciones'),
 ('empresa_nombre', 'Transportes Romero', 'STRING', 'Nombre de la empresa'),
 ('archivos_max_tamano_mb', '5', 'NUMBER', 'Tamaño máximo de archivos en MB'),
-('archivos_max_cantidad', '5', 'NUMBER', 'Cantidad máxima de archivos por reclamo');
+('archivos_max_cantidad', '5', 'NUMBER', 'Cantidad máxima de archivos por reclamo'),
+('reportes_dias_expiracion', '7', 'NUMBER', 'Días antes de eliminar reportes temporales');
 ```
 
 ---
 
-### 14. LOGS_AUDITORIA (logs_auditoria)
-
-Registro de acciones importantes para auditoría
+### 15. LOGS_AUDITORIA (logs_auditoria)
 
 ```sql
 CREATE TABLE logs_auditoria (
     id SERIAL PRIMARY KEY,
     tabla VARCHAR(50) NOT NULL,
     registro_id INTEGER NOT NULL,
-    accion VARCHAR(20) NOT NULL, -- 'INSERT', 'UPDATE', 'DELETE'
+    accion VARCHAR(20) NOT NULL,
     usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
     datos_anteriores JSONB,
     datos_nuevos JSONB,
@@ -499,78 +582,40 @@ CREATE INDEX idx_logs_fecha ON logs_auditoria(fecha_accion DESC);
 
 ---
 
-## 🔑 Relaciones Principales
-
-1. **USUARIOS → RECLAMOS**: Un usuario puede crear muchos reclamos
-2. **RECLAMOS → COMENTARIOS**: Un reclamo puede tener muchos comentarios
-3. **RECLAMOS → ARCHIVOS**: Un reclamo puede tener muchos archivos
-4. **RECLAMOS → ENCUESTAS_RESPUESTAS**: Un reclamo genera una encuesta
-5. **USUARIOS → ROLES**: Un usuario tiene un rol
-6. **RECLAMOS → ESTADOS**: Un reclamo tiene un estado actual
-7. **RECLAMOS → MOTIVOS**: Un reclamo tiene un motivo específico
-
----
-
-## 📈 Índices para Optimización
-
-Ya incluidos en las definiciones anteriores, pero resumen:
+## 🔄 EJEMPLOS DE CÓDIGOS ÚNICOS POR CANAL
 
 ```sql
--- Índices más importantes
-CREATE INDEX idx_reclamos_codigo ON reclamos(codigo); -- Consulta pública
-CREATE INDEX idx_reclamos_estado ON reclamos(estado_id); -- Filtros admin
-CREATE INDEX idx_reclamos_agente ON reclamos(agente_asignado_id); -- Mis casos
-CREATE INDEX idx_reclamos_fecha ON reclamos(fecha_reclamo DESC); -- Ordenamiento
-CREATE INDEX idx_notificaciones_enviada ON notificaciones(enviada); -- Cola de envío
+-- Ejemplos de códigos generados:
+WEB-2025-0001      -- Primer reclamo por formulario web en 2025
+WEB-2025-0002      -- Segundo reclamo por formulario web
+QR-2025-0001       -- Primer reclamo escaneando código QR
+QR-2025-0002       -- Segundo reclamo por QR
+EMAIL-2025-0001    -- Primer reclamo por email
+FISICO-2025-0001   -- Primer reclamo físico digitalizado
 ```
 
----
-
-## 🔐 Seguridad y Constraints
-
-- ✅ Foreign Keys con ON DELETE apropiado
-- ✅ Constraints para valores válidos
-- ✅ Índices únicos donde corresponde
-- ✅ Triggers para auditoría automática
-- ✅ Campos de fecha para tracking
+**Ventajas:**
+- ✅ Identificación inmediata del canal de origen
+- ✅ Numeración independiente por canal
+- ✅ Estadísticas precisas por canal
+- ✅ Optimización de recursos según canal preferido
 
 ---
 
-## 📊 Estimación de Almacenamiento
+## 📊 Query de Ejemplo: Estadísticas por Canal
 
-**Para 10,000 reclamos/año:**
-- Reclamos: ~5 MB
-- Comentarios: ~10 MB
-- Archivos: ~2 GB (depende de cantidad)
-- Notificaciones: ~3 MB
-- Logs: ~5 MB
-
-**Total estimado:** ~2.5 GB/año
-
----
-
-## 🛠️ Scripts de Mantenimiento
-
-### Limpiar notificaciones antiguas (mensual)
 ```sql
-DELETE FROM notificaciones 
-WHERE fecha_creacion < NOW() - INTERVAL '90 days'
-AND leida = TRUE;
-```
-
-### Archivar reclamos antiguos (anual)
-```sql
--- Crear tabla de archivo
-CREATE TABLE reclamos_archivo (LIKE reclamos INCLUDING ALL);
-
--- Mover reclamos cerrados de hace más de 2 años
-INSERT INTO reclamos_archivo
-SELECT * FROM reclamos
-WHERE estado_id IN (SELECT id FROM estados_reclamo WHERE es_estado_final = TRUE)
-AND fecha_cierre < NOW() - INTERVAL '2 years';
+SELECT 
+    canal,
+    COUNT(*) as total_reclamos,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) as porcentaje
+FROM reclamos
+WHERE EXTRACT(YEAR FROM fecha_reclamo) = 2025
+GROUP BY canal
+ORDER BY total_reclamos DESC;
 ```
 
 ---
 
 **Documento actualizado:** Noviembre 2025  
-**Versión:** 1.0
+**Versión:** 1.1 - Códigos por Canal + Notificaciones de Reportes

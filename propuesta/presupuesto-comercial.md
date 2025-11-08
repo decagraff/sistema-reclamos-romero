@@ -23,8 +23,8 @@ Este documento presenta **3 opciones** de implementación que se ajustan a difer
 
 | Característica | BÁSICO | PROFESIONAL ⭐ | PREMIUM |
 |----------------|--------|----------------|---------|
-| **Precio** | **S/. 25,000** | **S/. 42,000** | **S/. 58,000** |
-| **Tiempo** | 10-12 semanas | 16-20 semanas | 22-26 semanas |
+| **Inversión Inicial** | **S/. 25,000** | **S/. 42,000** | **S/. 58,000** |
+| **Modelo de Pago** | Por etapas | Por etapas | Por etapas |
 | Formulario público reclamos | ✅ | ✅ | ✅ |
 | Consulta pública por código | ✅ | ✅ | ✅ |
 | Panel administrativo completo | ✅ | ✅ | ✅ |
@@ -43,476 +43,350 @@ Este documento presenta **3 opciones** de implementación que se ajustan a difer
 | **Chat en Tiempo Real** | ❌ | ❌ | ✅ |
 | Notificaciones push en tiempo real | ❌ | ❌ | ✅ |
 | API REST documentada | ❌ | ❌ | ✅ |
-| Estadísticas avanzadas con IA | ❌ | ❌ | ✅ |
-| Capacitación incluida | ❌ | ❌ | 1 sesión |
+| Estadísticas avanzadas | ❌ | ❌ | ✅ |
+| Capacitación incluida | ❌ | ❌ | 1 sesión (4hrs) |
 | Garantía | 30 días | 60 días | 90 días |
 | Soporte post-entrega | 1 mes | 3 meses | 6 meses |
 
 ---
 
+## 💰 MODELO DE PAGO POR ETAPAS
+
+En lugar de comprometerse con un monto total desde el inicio, el desarrollo se estructura en **etapas con entregables concretos**. Cada etapa tiene un costo asociado y se paga al completarla.
+
+### Ventajas de este Modelo:
+- ✅ Menor riesgo inicial
+- ✅ Visibilidad constante del avance
+- ✅ Posibilidad de pausar o ajustar el alcance
+- ✅ Pago solo por lo que se completa
+- ✅ Flexibilidad en prioridades
+
+---
+
 ## 💼 PAQUETE 1: BÁSICO
 
-### **Inversión: S/. 25,000**
-### **Tiempo de Implementación: 10-12 semanas**
+### **Inversión Total: S/. 25,000**
+### **Desarrollo por Etapas**
 
-#### ✅ Funcionalidades Incluidas
+#### ETAPA 1: Diseño y Planificación - S/. 3,000
+**Duración:** 1-2 semanas  
+**Entregables:**
+- Diseño completo de base de datos
+- Mockups de pantallas principales
+- Plan de proyecto detallado
+- Arquitectura técnica aprobada
 
-**Módulo de Reclamos:**
-- Formulario público web para registro de reclamos
-- Captura de todos los campos requeridos por Indecopi
-- Subida de archivos adjuntos (hasta 5 archivos de 5MB c/u)
-- Generación automática de código único (REC-2025-XXXX)
-- Consulta pública de estado por código (sin necesidad de login)
-- Panel administrativo para gestión interna
-- Sistema de estados: Nuevo, En Revisión, En Proceso, Resuelto, Cerrado, etc.
+#### ETAPA 2: Fundación del Sistema - S/. 5,000
+**Duración:** 2 semanas  
+**Entregables:**
+- Base de datos PostgreSQL configurada
+- Sistema de autenticación funcional
+- Panel de login para administradores
+- Setup completo del proyecto
+
+#### ETAPA 3: Módulo de Reclamos Core - S/. 8,000
+**Duración:** 3-4 semanas  
+**Entregables:**
+- Formulario público funcional
+- Registro de reclamos con validaciones
+- Sistema de archivos adjuntos
+- Generación de código único por canal
+- Consulta pública por código
+- Panel administrativo básico
+- Sistema de estados
+
+#### ETAPA 4: Gestión Interna - S/. 5,000
+**Duración:** 2 semanas  
+**Entregables:**
 - Asignación de casos a agentes
 - Sistema de comentarios internos
-- Historial completo de cambios
+- Historial de cambios
+- Notificaciones por email automáticas
 
-**Notificaciones Automáticas:**
-- Email de confirmación al registrar reclamo
-- Notificación al cambiar de estado
-- Notificación al resolver reclamo
-- Alertas a administradores de nuevos casos
-
-**Módulo de Encuestas:**
+#### ETAPA 5: Encuestas y Reportes - S/. 3,000
+**Duración:** 1-2 semanas  
+**Entregables:**
 - Creador de encuestas básicas
 - Envío automático post-resolución
-- Captura de respuestas
-- Visualización de resultados
+- Dashboard con métricas principales
+- Reporte básico para Indecopi
+- Exportación a Excel
 
-**Reportes y Dashboard:**
-- Dashboard básico con métricas principales:
-  - Total de reclamos
-  - Reclamos por estado
-  - Reclamos resueltos vs pendientes
-- Reporte para Indecopi con formato establecido
-- Exportación a Excel (.xlsx)
+#### ETAPA 6: Testing y Deploy - S/. 1,000
+**Duración:** 1 semana  
+**Entregables:**
+- Testing completo
+- Corrección de bugs
+- Deploy en servidor
+- Capacitación (2 sesiones de 2 hrs)
+- Documentación
 
-**Gestión de Usuarios:**
-- Sistema de roles: Admin, Supervisor, Agente
-- Login con email y contraseña
-- Permisos por rol
-
-**Seguridad:**
-- Autenticación JWT
-- Contraseñas encriptadas
-- HTTPS obligatorio
-- Validaciones de datos
-
-**Infraestructura:**
-- Base de datos PostgreSQL
-- Backend ASP.NET Core 8.0
-- Frontend React + TypeScript
-- Diseño responsive (móvil, tablet, desktop)
-
-#### 📦 Entregables
-
-- ✅ Sistema completo instalado y funcionando
-- ✅ Base de datos configurada
-- ✅ Código fuente
-- ✅ Documentación técnica básica
-- ✅ Manual de usuario en PDF
-- ✅ 2 sesiones de capacitación (2 horas c/u)
-
-#### ⚙️ Soporte y Garantía
-
-- **Garantía:** 30 días de corrección de bugs
-- **Soporte:** 1 mes de soporte técnico vía email/WhatsApp (horario laboral)
-- **Actualizaciones:** No incluidas
-
-#### 💰 Forma de Pago
-
-- **40% al firmar contrato:** S/. 10,000
-- **30% a la mitad del proyecto:** S/. 7,500
-- **30% al entregar:** S/. 7,500
-
-#### ⏱️ Cronograma
-
-| Fase | Duración | Entregable |
-|------|----------|------------|
-| 1. Diseño y planificación | 2 semanas | Mockups y BD |
-| 2. Desarrollo backend | 4 semanas | API funcional |
-| 3. Desarrollo frontend | 3 semanas | Interfaz completa |
-| 4. Testing y ajustes | 2 semanas | Sistema estable |
-| 5. Deploy y capacitación | 1 semana | Sistema en producción |
+**TOTAL: S/. 25,000 en 10-12 semanas**
 
 ---
 
 ## 💼 PAQUETE 2: PROFESIONAL ⭐ (RECOMENDADO)
 
-### **Inversión: S/. 42,000**
-### **Tiempo de Implementación: 16-20 semanas**
+### **Inversión Total: S/. 42,000**
+### **Todo lo del Básico + Portal del Cliente + Reportes Avanzados**
 
-#### ✅ TODO LO DEL PAQUETE BÁSICO +
+#### ETAPAS 1-6 DEL BÁSICO - S/. 25,000
+(Igual que el paquete básico)
 
-**Portal del Cliente:**
-- Sistema de registro para clientes
-- Login personalizado
-- Dashboard personal con:
-  - Todos mis reclamos en un solo lugar
-  - Estado actual de cada reclamo
-  - Historial completo
-- Ver detalle completo de cada reclamo propio
-- Sistema de comentarios bidireccional (cliente-empresa)
-- Perfil de usuario editable
-- Notificaciones internas en el portal
+#### ETAPA 7: Portal del Cliente - S/. 9,000
+**Duración:** 3-4 semanas  
+**Entregables:**
+- Sistema de registro de clientes
+- Login personalizado con JWT
+- Dashboard personal del cliente
+- Ver todos mis reclamos
+- Sistema de comentarios bidireccional
+- Perfil editable
+- Notificaciones internas
 
-**Reportes Avanzados:**
-- Dashboard avanzado con gráficos interactivos:
-  - Tendencias mensuales
-  - Reclamos por categoría
-  - Tiempo promedio de resolución
-  - Satisfacción del cliente (%)
-  - Agentes más efectivos
-- Reportes personalizados con filtros avanzados
-- Exportación a PDF profesional (con logo y formato)
-- Reporte ejecutivo mensual automatizado
+#### ETAPA 8: Reportes Avanzados y QR - S/. 5,000
+**Duración:** 2 semanas  
+**Entregables:**
+- Dashboard avanzado con gráficos
+- Reportes personalizados con filtros
+- Exportación PDF profesional
+- Generador de códigos QR automático
+- Sistema de priorización
+- Alertas de SLA
 
-**Funcionalidades Adicionales:**
-- Generador automático de códigos QR para acceso rápido
-- Sistema de priorización de reclamos (Alta, Media, Baja, Urgente)
-- Alertas de vencimiento SLA (tiempo de respuesta)
-- Campos personalizables en formularios
-- Múltiples canales de ingreso (Web, QR, Email)
-- Sistema de archivos mejorado con vista previa
+#### ETAPA 9: Optimización y Entrega Final - S/. 3,000
+**Duración:** 2 semanas  
+**Entregables:**
+- Testing integral
+- Optimización de rendimiento
+- Documentación completa
+- 4 sesiones de capacitación
+- Soporte 3 meses
 
-**Diseño Mejorado:**
-- UI/UX profesional y moderno
-- Animaciones y transiciones suaves
-- Diseño personalizado según brand de Transportes Romero
-
-#### 📦 Entregables
-
-- ✅ Todo lo del Paquete Básico
-- ✅ Portal del cliente completo
-- ✅ Sistema de reportes avanzados
-- ✅ Códigos QR para cada reclamo
-- ✅ Documentación técnica completa
-- ✅ Manual de usuario detallado
-- ✅ **4 sesiones de capacitación** (2 horas c/u)
-  - 2 para administradores/supervisores
-  - 2 para agentes
-
-#### ⚙️ Soporte y Garantía
-
-- **Garantía:** 60 días de corrección de bugs
-- **Soporte:** 3 meses de soporte técnico vía email/WhatsApp
-- **Actualizaciones menores:** 3 meses incluidos
-- **Mantenimiento:** Prioridad en solicitudes
-
-#### 💰 Forma de Pago
-
-- **40% al firmar contrato:** S/. 16,800
-- **30% a la mitad del proyecto:** S/. 12,600
-- **30% al entregar:** S/. 12,600
-
-#### ⏱️ Cronograma
-
-| Fase | Duración | Entregable |
-|------|----------|------------|
-| 1. Planificación y diseño | 2 semanas | Diseño completo aprobado |
-| 2. Infraestructura | 1 semana | BD y setup |
-| 3. Módulo de reclamos | 5 semanas | Core funcional |
-| 4. Portal del cliente | 4 semanas | Portal completo |
-| 5. Encuestas y reportes | 3 semanas | Módulos adicionales |
-| 6. Testing integral | 2 semanas | Sistema probado |
-| 7. Deploy y capacitación | 1 semana | En producción |
+**TOTAL: S/. 42,000 en 16-20 semanas**
 
 ---
 
 ## 💼 PAQUETE 3: PREMIUM
 
-### **Inversión: S/. 58,000**
-### **Tiempo de Implementación: 22-26 semanas**
+### **Inversión Total: S/. 58,000**
+### **Todo lo del Profesional + Chat Tiempo Real + API + Capacitación**
 
-#### ✅ TODO LO DEL PAQUETE PROFESIONAL +
+#### ETAPAS 1-9 DEL PROFESIONAL - S/. 42,000
+(Igual que el paquete profesional)
 
-**Chat en Tiempo Real:**
-- Sistema de chat bidireccional cliente-agente
-- Notificaciones en tiempo real con SignalR
-- Indicadores de "escribiendo..."
-- Historial completo de conversaciones
-- Estado online/offline
+#### ETAPA 10: Chat en Tiempo Real - S/. 7,000
+**Duración:** 2-3 semanas  
+**Entregables:**
+- SignalR Hub configurado
+- Chat bidireccional funcional
+- Notificaciones push en tiempo real
+- Indicadores de escritura
+- Historial de conversaciones
 - Chat interno entre agentes
 
-**Notificaciones Push en Tiempo Real:**
-- Notificaciones instantáneas en el navegador
-- Sin necesidad de recargar la página
-- Centro de notificaciones completo
-- Alertas sonoras configurables
+#### ETAPA 11: API REST y Dashboard Ejecutivo - S/. 6,000
+**Duración:** 2-3 semanas  
+**Entregables:**
+- API REST completa documentada
+- Swagger/OpenAPI
+- Dashboard ejecutivo avanzado
+- Estadísticas con análisis de datos
+- Webhooks para integraciones
 
-**API REST Documentada:**
-- API completa para integraciones futuras
-- Documentación Swagger/OpenAPI
-- Webhooks para eventos importantes
-- Posibilidad de integrar con otros sistemas (ERP, CRM)
-
-**Dashboard Ejecutivo Avanzado:**
-- Métricas estratégicas en tiempo real
-- Gráficos interactivos avanzados (Recharts)
-- Predicciones y tendencias con análisis de datos
-- KPIs personalizables
-- Vista comparativa por períodos
-- Exportación de cualquier gráfico
-
-**Estadísticas con IA:**
-- Detección automática de patrones en reclamos
-- Sugerencias de respuestas basadas en casos similares
-- Clasificación automática de prioridad
-- Análisis de sentimiento en comentarios
-
-**Funcionalidades Premium:**
-- Sistema de backup automático diario
+#### ETAPA 12: Premium Features - S/. 3,000
+**Duración:** 1-2 semanas  
+**Entregables:**
+- Sistema de backup automático
 - Logs de auditoría completos
-- Recuperación de datos eliminados
-- Multi-idioma (Español/Inglés)
-- Modo oscuro para la interfaz
+- Multi-idioma (ES/EN)
+- Optimización avanzada
+- 1 sesión de capacitación presencial (4 hrs)
+- Soporte 6 meses
 
-#### 📦 Entregables
-
-- ✅ Todo lo del Paquete Profesional
-- ✅ Chat en tiempo real completo
-- ✅ API REST documentada
-- ✅ Dashboard ejecutivo avanzado
-- ✅ Sistema de backup automático
-- ✅ Documentación técnica exhaustiva
-- ✅ Manual de administrador
-- ✅ Manual de usuario final
-- ✅ **1 sesión de capacitación presencial** (4 horas)
-  - Para todo el equipo
-  - En las instalaciones del cliente
-
-#### ⚙️ Soporte y Garantía
-
-- **Garantía:** 90 días de corrección de bugs
-- **Soporte:** 6 meses de soporte técnico prioritario
-- **Actualizaciones:** 6 meses de actualizaciones incluidas
-- **Mantenimiento:** Acceso prioritario para nuevos requerimientos
-- **Consultoría:** 2 horas mensuales de consultoría técnica (6 meses)
-
-#### 💰 Forma de Pago
-
-- **40% al firmar contrato:** S/. 23,200
-- **30% a la mitad del proyecto:** S/. 17,400
-- **30% al entregar:** S/. 17,400
-
-#### ⏱️ Cronograma
-
-| Fase | Duración | Entregable |
-|------|----------|------------|
-| 1. Planificación detallada | 2 semanas | Plan completo |
-| 2. Infraestructura y diseño | 2 semanas | Setup avanzado |
-| 3. Módulo de reclamos | 5 semanas | Core completo |
-| 4. Portal del cliente | 4 semanas | Portal full |
-| 5. Chat en tiempo real | 3 semanas | SignalR funcional |
-| 6. Encuestas y reportes | 2 semanas | Módulos adicionales |
-| 7. Dashboard avanzado y API | 3 semanas | Premium features |
-| 8. Testing y optimización | 3 semanas | Sistema optimizado |
-| 9. Deploy y capacitación | 1 semana | Producción + training |
+**TOTAL: S/. 58,000 en 22-26 semanas**
 
 ---
 
-## 💻 REQUERIMIENTOS TÉCNICOS
+## 💡 VENTAJAS DEL MODELO POR ETAPAS
 
-### Lo que el Cliente Debe Proporcionar:
+### Flexibilidad Total
+- Puedes detener el proyecto después de cualquier etapa
+- Ajustar prioridades según necesidades
+- Agregar o quitar funcionalidades entre etapas
 
-1. **Hosting:**
-   - VPS Ubuntu 22.04+ (recomendado: 4GB RAM, 2 CPU, 50GB SSD)
-   - Acceso SSH root
-   - O podemos gestionar el hosting (costo adicional)
+### Control de Inversión
+- Pagas solo por lo completado
+- Visibilidad constante del gasto
+- Presupuesto predecible
 
-2. **Dominio:**
-   - Dominio propio (ej: reclamos.romeroempresas.com)
-   - Acceso al panel de DNS
+### Menor Riesgo
+- Evalúas resultados antes de continuar
+- Cambios más fáciles de implementar
+- Entregas incrementales
 
-3. **Email:**
-   - Cuenta SendGrid o Mailgun para envío de emails
-   - O podemos configurar (costo adicional)
+---
 
-4. **Contenido:**
-   - Logo de la empresa en formato vectorial
-   - Colores corporativos (códigos hex)
-   - Textos legales si aplican
+## 🔢 CÓDIGO ÚNICO POR CANAL
 
-### Stack Tecnológico:
+El sistema generará códigos únicos que identifican el canal de ingreso:
 
-- **Backend:** ASP.NET Core 8.0 (C#)
-- **Frontend:** React 18 + TypeScript
+```
+WEB-2025-0001   (Ingreso por formulario web)
+QR-2025-0001    (Ingreso escaneando código QR)
+EMAIL-2025-0001 (Ingreso por email)
+FISICO-2025-0001 (Digitalización de reclamo físico)
+```
+
+Esto permite:
+- ✅ Mejor tracking del canal preferido
+- ✅ Estadísticas por canal
+- ✅ Optimización de recursos
+
+---
+
+## 💻 STACK TECNOLÓGICO
+
+### Backend
+- **Framework:** ASP.NET Core 8.0 (C#)
 - **Base de Datos:** PostgreSQL 15+
-- **Servidor Web:** Nginx
+- **Autenticación:** JWT
+- **Notificaciones:** SendGrid/Mailgun
+
+### Frontend
+- **Framework:** React 18 + TypeScript
+- **UI:** Material-UI / Ant Design
+- **Estado:** Context API
+
+### Infraestructura
+- **Servidor:** Ubuntu VPS con Nginx
+- **Storage:** Sistema de archivos local
 - **SSL:** Let's Encrypt (gratis)
+- **Proxy:** Cloudflare
 
 ---
 
-## 💰 COSTOS MENSUALES ADICIONALES (Estimados)
+## 💰 COSTOS MENSUALES ADICIONALES
 
-Estos costos son responsabilidad del cliente y NO están incluidos en los paquetes:
+Estos costos son del cliente y NO están incluidos:
 
 | Servicio | Costo Mensual |
 |----------|---------------|
-| **VPS Hosting** | S/. 100 - 200 |
-| **Dominio .com.pe** | S/. 10 (anual S/. 120) |
-| **SendGrid (Emails)** | S/. 50 - 100 |
-| **Backup Externo** | S/. 30 - 50 |
+| VPS Hosting | S/. 100 - 200 |
+| Dominio .com.pe | S/. 10 (S/. 120/año) |
+| SendGrid (Emails) | S/. 50 - 100 |
+| Backup Externo | S/. 30 - 50 |
 | **TOTAL MENSUAL** | **S/. 190 - 350** |
-
-**Primer año total:** S/. 2,280 - 4,200 en infraestructura
 
 ---
 
 ## 📞 SERVICIOS POST-ENTREGA (Opcionales)
 
-### Paquetes de Soporte Mensual
+### Soporte Mensual
 
-#### Soporte Básico - S/. 500/mes
-- Respuesta en 48 horas hábiles
+#### Básico - S/. 500/mes
+- Respuesta en 48 horas
 - Corrección de bugs
-- Consultas técnicas por email
-- 2 horas de cambios menores/mes
+- 2 horas de cambios menores
 
-#### Soporte Profesional - S/. 800/mes
+#### Profesional - S/. 800/mes
 - Respuesta en 24 horas
-- Todo lo del básico +
-- 5 horas de desarrollo/mes
+- 5 horas de desarrollo
 - Actualizaciones de seguridad
-- Monitoreo proactivo
 
-#### Soporte Premium - S/. 1,200/mes
+#### Premium - S/. 1,200/mes
 - Respuesta en 4 horas
-- Todo lo del profesional +
-- 10 horas de desarrollo/mes
+- 10 horas de desarrollo
 - Nuevas funcionalidades
 - Reuniones mensuales
-- Optimizaciones continuas
 
-### Servicios Adicionales (Por Demanda)
-
-- **Nuevas funcionalidades:** S/. 70/hora
-- **Capacitaciones adicionales:** S/. 300/sesión (2 horas)
-- **Integración con otros sistemas:** Cotización según complejidad
-- **Migración de datos:** Desde S/. 1,500
-- **Diseño personalizado:** Desde S/. 2,000
-
----
-
-## ✅ QUÉ INCLUYEN TODOS LOS PAQUETES
-
-### Diseño y Planificación
-- ✅ Reunión de levantamiento de requerimientos
-- ✅ Diseño de base de datos completo
-- ✅ Mockups/wireframes de pantallas principales
-- ✅ Plan de proyecto detallado
-
-### Desarrollo
-- ✅ Código limpio y documentado
-- ✅ Arquitectura escalable
-- ✅ Buenas prácticas de desarrollo
-- ✅ Control de versiones con Git
-
-### Testing
-- ✅ Pruebas unitarias
-- ✅ Pruebas de integración
-- ✅ Pruebas de usuario (UAT)
-- ✅ Corrección de bugs encontrados
-
-### Despliegue
-- ✅ Configuración del servidor
-- ✅ Instalación del sistema
-- ✅ Configuración de SSL/HTTPS
-- ✅ Optimización de rendimiento
-
-### Entregables
-- ✅ Sistema completo funcionando
-- ✅ Código fuente
-- ✅ Base de datos configurada
-- ✅ Documentación técnica
-- ✅ Manual de usuario
-- ✅ Capacitación del equipo
-
-### Garantía
-- ✅ Corrección de bugs en período de garantía
-- ✅ Soporte técnico post-entrega
-- ✅ Atención de consultas
+### Servicios Adicionales
+- Nuevas funcionalidades: S/. 70/hora
+- Capacitaciones extra: S/. 300/sesión
+- Integraciones: Según complejidad
 
 ---
 
 ## 📋 CONDICIONES GENERALES
 
-### Vigencia de la Propuesta
-- Esta propuesta es válida por **30 días** desde su emisión
-
-### Inicio del Proyecto
-- El proyecto inicia al recibir el primer pago (40%)
-- Se requiere firma de contrato antes del inicio
-
-### Cambios en el Alcance
-- Cambios solicitados fuera del alcance original serán cotizados aparte
-- Pueden afectar el tiempo de entrega
+### Forma de Pago por Etapas
+- **Al inicio de cada etapa:** 50% del costo de la etapa
+- **Al finalizar cada etapa:** 50% restante
+- Ejemplo ETAPA 3 (S/. 8,000):
+  - Al inicio: S/. 4,000
+  - Al entregar: S/. 4,000
 
 ### Propiedad Intelectual
-- El cliente tendrá propiedad total del código fuente al completar el pago
-- Durante el desarrollo, los derechos pertenecen al desarrollador
+- **Durante el desarrollo:** Derechos pertenecen al desarrollador
+- **Al completar el pago total:** Transferencia completa de derechos al cliente
+- **Código fuente:** Entregado al finalizar proyecto completo
+
+### Garantías por Paquete
+- **Básico:** 30 días + 1 mes soporte
+- **Profesional:** 60 días + 3 meses soporte
+- **Premium:** 90 días + 6 meses soporte
 
 ### Responsabilidades del Cliente
-- Proporcionar acceso a recursos necesarios
-- Feedback oportuno durante el desarrollo
-- Aprobaciones en tiempos acordados
-- Proporcionar contenido y assets
+- Proporcionar accesos necesarios
+- Feedback en máximo 5 días hábiles
+- Contenido y assets (logos, textos)
+- Hosting y dominio
 
-### Confidencialidad
-- Toda información del proyecto será tratada con confidencialidad
-- Se puede firmar NDA si el cliente lo requiere
+---
+
+## ✅ QUÉ INCLUYEN TODOS LOS PAQUETES
+
+- ✅ Diseño UI/UX profesional
+- ✅ Código limpio y documentado
+- ✅ Responsive design (móvil, tablet, desktop)
+- ✅ Testing y corrección de bugs
+- ✅ Deploy en servidor
+- ✅ Documentación técnica
+- ✅ Manual de usuario
+- ✅ Notificaciones por email automáticas
+- ✅ Cumplimiento normativo Indecopi
 
 ---
 
 ## 🎯 RECOMENDACIÓN
 
-Para **Transportes Romero**, considerando:
-- ✅ Es una empresa establecida con visión de crecimiento
-- ✅ Necesidad de cumplimiento normativo (Indecopi)
-- ✅ Volumen esperado de reclamos
-- ✅ Importancia de la experiencia del cliente
-
-### Recomendamos: **PAQUETE PROFESIONAL (S/. 42,000)**
+Para Transportes Romero, recomendamos el **PAQUETE PROFESIONAL (S/. 42,000)**:
 
 **¿Por qué?**
-- Incluye portal del cliente (diferenciador importante)
-- Reportes avanzados para toma de decisiones
-- Mejor relación calidad-precio
-- Dashboard profesional para gerencia
-- Soporte extendido (3 meses)
-- Tiempo de implementación razonable (16-20 semanas)
+- ✅ Portal del cliente (gran diferenciador)
+- ✅ Reportes avanzados para gerencia
+- ✅ Códigos QR automáticos
+- ✅ Mejor relación calidad-precio
+- ✅ Soporte extendido (3 meses)
+- ✅ 4 sesiones de capacitación
 
-El **Paquete Básico** cumple con lo mínimo legal pero carece de portal para clientes.
-
-El **Paquete Premium** es excelente si planean crecer rápido y necesitan integraciones, pero tiene mayor inversión inicial.
+El Básico cumple lo legal pero sin portal.  
+El Premium es ideal si planean integraciones con otros sistemas.
 
 ---
 
 ## 📞 PRÓXIMOS PASOS
 
-1. **Revisar propuesta** con su equipo
-2. **Reunión de aclaraciones** si tienen dudas
-3. **Seleccionar el paquete** que mejor se ajuste
-4. **Firma de contrato** y primer pago
-5. **Kickoff meeting** - inicio del proyecto
+1. Revisar propuesta
+2. Reunión de aclaraciones (si es necesario)
+3. Seleccionar paquete
+4. Firma de contrato
+5. Pago de ETAPA 1 (Diseño y Planificación)
+6. Inicio del proyecto
 
 ---
 
 ## 📧 CONTACTO
 
-**Desarrollador:** Deca  
-**Email:** [tu-email]  
-**Teléfono/WhatsApp:** [tu-telefono]  
-**Portfolio:** https://decatron.net
+**Desarrollador:** AnthonyDeca
+**Email:** anthonydeca@decatron.net 
+
+
 
 ---
 
-**Nota:** Esta propuesta puede ser ajustada según necesidades específicas del cliente. Los precios son en soles peruanos (PEN) e incluyen IGV.
+**Nota:** Esta propuesta puede ajustarse según necesidades. Los precios son en soles peruanos e incluyen IGV.
 
----
-
-**Fecha de emisión:** Noviembre 2025  
-**Válido hasta:** Diciembre 2025  
-**Versión:** 1.0
+**Vigencia:** 30 días  
+**Fecha:** Noviembre 2025  
+**Versión:** 1.1 - Modelo por Etapas

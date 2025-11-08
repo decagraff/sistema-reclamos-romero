@@ -5,7 +5,7 @@
 Sistema web integral para la gestión de reclamos y encuestas de satisfacción del cliente, cumpliendo con las normativas de Indecopi y permitiendo múltiples canales de registro con **códigos únicos por medio**.
 
 **Cliente:** Transportes Romero  
-**Tipo:** Aplicación Web Completa  
+**Tipo:** Aplicación Web
 **Estado:** En Planificación
 
 ---
@@ -386,7 +386,7 @@ Al final de cada etapa hay revisión y aprobación antes de continuar.
 
 ## 📞 Contacto
 
-**Desarrollador:** Deca  
+**Desarrollador:** AnthonyDeca  
 **Email:** anthonydeca@decatron.net 
 **Repositorio:** https://github.com/decagraff/sistema-reclamos-romero
 

@@ -381,11 +381,9 @@ El Premium es ideal si planean integraciones con otros sistemas.
 **Desarrollador:** AnthonyDeca
 **Email:** anthonydeca@decatron.net 
 
-
-
 ---
 
-**Nota:** Esta propuesta puede ajustarse según necesidades. Los precios son en soles peruanos e incluyen IGV.
+**Nota:** Esta propuesta puede ajustarse según necesidades.
 
 **Vigencia:** 30 días  
 **Fecha:** Noviembre 2025  
